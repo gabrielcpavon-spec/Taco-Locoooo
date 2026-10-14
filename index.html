@@ -880,7 +880,7 @@
                 <div class="hero-logo-container">
                     <div class="three-container">
                         <div id="three-canvas-container"></div>
-                        <p class="three-hint">🌮 Taco Loco 3D (Mantén presionado y arrastra)</p>
+                        <p class="three-hint">🌮 Taco Loco 3D (Arrastra para rotar)</p>
                     </div>
                 </div>
 
@@ -1261,7 +1261,7 @@
         renderMenu();
     </script>
 
-    <!-- Script de Inicialización de Three.js (Taco 3D) -->
+    <!-- Script de Inicialización de Three.js MEJORADO (Taco Semicircular y SIN ZOOM) -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('three-canvas-container');
@@ -1272,67 +1272,110 @@
 
             // Escena, Cámara y Renderer
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-            camera.position.set(0, 1, 5);
+            // Cámara con perspectiva para ver el objeto 3D
+            const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+            camera.position.set(0, 0.5, 6); // Posicionada para verlo de frente
 
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(width, height);
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            // Iluminación
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            // Iluminación mejorada para dar volumen
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9); // Luz suave general
             scene.add(ambientLight);
 
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-            dirLight.position.set(5, 10, 7);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6); // Luz direccional para sombras
+            dirLight.position.set(5, 8, 5);
             scene.add(dirLight);
+
+            const fillLight = new THREE.PointLight(0xf1a851, 0.3); // Luz de relleno color taco
+            fillLight.position.set(-5, -2, 2);
+            scene.add(fillLight);
 
             // Grupo para el Taco 3D
             const tacoGroup = new THREE.Group();
 
-            // Tortilla exterior (Cilindro recortado)
-            const shellGeo = new THREE.CylinderGeometry(1.6, 1.6, 1.2, 32, 1, true, 0, Math.PI);
+            // --- 1. Tortilla Semicircular Mejorada ---
+            // Usamos LatheGeometry para crear una forma de disco curvado (uvas) y luego la cortamos a la mitad
+            const points = [];
+            for (let i = 0; i < 10; i++) {
+                // Curva suave para el borde de la tortilla
+                points.push(new THREE.Vector2(Math.sin(i * 0.18) * 1.8 + 0.1, (i - 5) * 0.08));
+            }
+            // LatheGeometry crea la forma rotando los puntos. phiLength: Math.PI crea solo MEDIO giro.
+            const shellGeo = new THREE.LatheGeometry(points, 32, 0, Math.PI);
             const shellMat = new THREE.MeshStandardMaterial({ 
-                color: 0xf1a851, 
-                side: THREE.DoubleSide, 
-                roughness: 0.5 
+                color: 0xf1a851, // Color anaranjado tortilla
+                side: THREE.DoubleSide, // Ver por ambos lados
+                roughness: 0.7,
+                metalness: 0.1
             });
             const shell = new THREE.Mesh(shellGeo, shellMat);
-            shell.rotation.z = Math.PI / 2;
+            // Rotamos y posicionamos la tortilla para que tenga la abertura hacia arriba
             shell.rotation.x = Math.PI / 2;
+            shell.rotation.y = Math.PI / 2;
+            shell.position.y = -0.2;
             tacoGroup.add(shell);
 
-            // Relleno de Pollo / Carne (Caja interna)
-            const meatGeo = new THREE.BoxGeometry(2.4, 0.6, 0.9);
-            const meatMat = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.8 });
+            // --- 2. Relleno Mejorado (Pollo/Carne desmechada) ---
+            // Usamos una esfera aplastada y texturizada con color
+            const meatGeo = new THREE.SphereGeometry(1.5, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2); // Solo media esfera superior
+            const meatMat = new THREE.MeshStandardMaterial({ 
+                color: 0x8b4513, // Marrón oscuro carne
+                roughness: 1.0,
+                metalness: 0.0
+            });
             const meat = new THREE.Mesh(meatGeo, meatMat);
-            meat.position.set(0, -0.2, 0);
+            meat.scale.set(1.0, 0.4, 0.6); // Aplastada dentro de la tortilla
+            meat.position.set(0, 0.1, 0);
             tacoGroup.add(meat);
 
-            // Lechuga (Verde)
-            const lettuceGeo = new THREE.BoxGeometry(2.6, 0.2, 0.8);
-            const lettuceMat = new THREE.MeshStandardMaterial({ color: 0x88ab53, roughness: 0.6 });
-            const lettuce = new THREE.Mesh(lettuceGeo, lettuceMat);
-            lettuce.position.set(0, 0.05, 0);
-            tacoGroup.add(lettuce);
-
-            // Tomate / Salsa (Rojo)
-            const tomatoGeo = new THREE.SphereGeometry(0.18, 12, 12);
-            const tomatoMat = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.3 });
+            // --- 3. Lechuga Desmechada (Verde oscuro y claro) ---
+            // Pequeños cubos aleatorios para simular hojas
+            const lettuceGeo = new THREE.BoxGeometry(0.15, 0.15, 0.15);
+            const lettuceMatDark = new THREE.MeshStandardMaterial({ color: 0x55ab53, roughness: 1.0 });
+            const lettuceMatLight = new THREE.MeshStandardMaterial({ color: 0x88cd53, roughness: 1.0 });
             
-            for(let i = -0.8; i <= 0.8; i += 0.4) {
-                const t = new THREE.Mesh(tomatoGeo, tomatoMat);
-                t.position.set(i, 0.2, (Math.random() - 0.5) * 0.3);
-                tacoGroup.add(t);
+            for(let i = 0; i < 60; i++) {
+                const mat = Math.random() > 0.4 ? lettuceMatDark : lettuceMatLight;
+                const leaf = new THREE.Mesh(lettuceGeo, mat);
+                // Posiciones aleatorias esparcidas sobre la carne
+                leaf.position.set(
+                    (Math.random() - 0.5) * 2.6, // Ancho
+                    0.3 + Math.random() * 0.2, // Alto sobre carne
+                    (Math.random() - 0.5) * 0.8 // Profundidad
+                );
+                leaf.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
+                tacoGroup.add(leaf);
             }
 
-            // Inclinación inicial
-            tacoGroup.rotation.x = 0.3;
-            tacoGroup.rotation.y = -0.4;
+            // --- 4. Tomate y Cebolla picada (Rojo y Blanco) ---
+            // Esferas pequeñas
+            const tomatoGeo = new THREE.SphereGeometry(0.12, 8, 6);
+            const tomatoMat = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5 }); // Rojo brillante
+            
+            const onionGeo = new THREE.SphereGeometry(0.1, 8, 6);
+            const onionMat = new THREE.MeshStandardMaterial({ color: 0xfffffc, roughness: 0.8 }); // Blanco
+
+            for(let i = 0; i < 25; i++) {
+                const isTomato = Math.random() > 0.3;
+                const geo = isTomato ? tomatoGeo : onionGeo;
+                const mat = isTomato ? tomatoMat : onionMat;
+                const piece = new THREE.Mesh(geo, mat);
+                piece.position.set(
+                    (Math.random() - 0.5) * 2.6,
+                    0.4 + Math.random() * 0.3, // Más alto que lechuga
+                    (Math.random() - 0.5) * 0.7
+                );
+                tacoGroup.add(piece);
+            }
+
+            // Inclinación inicial para verlo bien
+            tacoGroup.rotation.x = 0.4; // Un poco inclinado hacia adelante
             scene.add(tacoGroup);
 
-            // Control interactivo con el mouse / touch
+            // --- Control Interactivo MEJORADO (SOLO ROTACIÓN, SIN ZOOM) ---
             let isDragging = false;
             let previousMousePosition = { x: 0, y: 0 };
 
@@ -1348,26 +1391,52 @@
                     y: e.clientY - previousMousePosition.y
                 };
 
-                tacoGroup.rotation.y += deltaMove.x * 0.01;
-                tacoGroup.rotation.x += deltaMove.y * 0.01;
+                // Rotar el grupo basado en el movimiento del ratón
+                tacoGroup.rotation.y += deltaMove.x * 0.01; // Rotación horizontal
+                tacoGroup.rotation.x += deltaMove.y * 0.01; // Rotación vertical
 
                 previousMousePosition = { x: e.clientX, y: e.clientY };
             });
 
             window.addEventListener('mouseup', () => { isDragging = false; });
 
-            // Animación continua
+            // Soporte para pantallas táctiles (mismos controles, SIN ZOOM)
+            renderer.domElement.addEventListener('touchstart', (e) => {
+                if(e.touches.length === 1) { // Solo un dedo
+                    isDragging = true;
+                    previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+            }, { passive: true });
+
+            renderer.domElement.addEventListener('touchmove', (e) => {
+                if (!isDragging || e.touches.length !== 1) return;
+                const deltaMove = {
+                    x: e.touches[0].clientX - previousMousePosition.x,
+                    y: e.touches[0].clientY - previousMousePosition.y
+                };
+
+                tacoGroup.rotation.y += deltaMove.x * 0.01;
+                tacoGroup.rotation.x += deltaMove.y * 0.01;
+
+                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                e.preventDefault(); // Prevenir scroll de la página al arrastrar
+            }, { passive: false });
+
+            window.addEventListener('touchend', () => { isDragging = false; });
+
+            // --- Animación continua y Responsivo ---
             function animate() {
                 requestAnimationFrame(animate);
+                // Rotación automática suave cuando no se arrastra
                 if (!isDragging) {
-                    tacoGroup.rotation.y += 0.005;
+                    tacoGroup.rotation.y += 0.003;
                 }
                 renderer.render(scene, camera);
             }
 
             animate();
 
-            // Responsivo
+            // Ajustar tamaño al cambiar ventana
             window.addEventListener('resize', () => {
                 const w = container.clientWidth;
                 const h = container.clientHeight;
