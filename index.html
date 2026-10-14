@@ -98,15 +98,17 @@
             height: 48px;
             border-radius: 50%;
             border: 2px solid var(--navy-blue);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: var(--bg-cream);
         }
 
-        .mini-logo-badge svg {
-            width: 32px;
-            height: 32px;
+        .mini-logo-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .brand-title {
@@ -814,15 +816,10 @@
     <nav class="navbar">
         <div class="nav-container max-w-7xl">
             
-            <!-- Logo Header -->
+            <!-- Logo Header con tu imagen real -->
             <a href="#" class="brand-logo">
                 <div class="mini-logo-badge">
-                    <svg viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="46" fill="none" stroke="#0b1e36" stroke-width="4"/>
-                        <path d="M 25 62 Q 50 32 75 62 Z" fill="#f1a851" stroke="#0b1e36" stroke-width="3"/>
-                        <path d="M 35 52 Q 50 28 65 52 Z" fill="#88ab53"/>
-                        <circle cx="50" cy="42" r="4" fill="#a0522d"/>
-                    </svg>
+                    <img src="logo.png" alt="Taco Loco Logo">
                 </div>
                 <div class="brand-title">
                     <span class="brand-name">TACO LOCO</span>
@@ -1044,8 +1041,8 @@
                     <h3 class="member-name">Andrea</h3>
                 </div>
                 <div class="member-card">
-                    <div class="member-avatar">E</div>
-                    <h3 class="member-name">Eily</h3>
+                    <div class="member-avatar">G</div>
+                    <h3 class="member-name">Gabriel</h3>
                 </div>
                 <div class="member-card team-badge">
                     <span class="team-icon">💻</span>
@@ -1060,7 +1057,7 @@
         <div class="max-w-7xl text-center">
             <div class="footer-brand">TACO LOCO</div>
             <p class="footer-desc">"Si no pica no cuenta" — Proyecto de Microempresa Escolar para la clase de Gestión Empresarial.</p>
-            <div class="footer-copy">© 2026 Taco Loco. Creado por Marvin, Hector, Cesar, Ashley, Andrea, Eily y equipo.</div>
+            <div class="footer-copy">© 2026 Taco Loco. Creado por Marvin, Hector, Cesar, Ashley, Andrea, Gabriel y equipo.</div>
         </div>
     </footer>
 
@@ -1272,24 +1269,23 @@
 
             // Escena, Cámara y Renderer
             const scene = new THREE.Scene();
-            // Cámara con perspectiva para ver el objeto 3D
             const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-            camera.position.set(0, 0.5, 6); // Posicionada para verlo de frente
+            camera.position.set(0, 0.5, 6);
 
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(width, height);
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            // Iluminación mejorada para dar volumen
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9); // Luz suave general
+            // Iluminación mejorada
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambientLight);
 
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6); // Luz direccional para sombras
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
             dirLight.position.set(5, 8, 5);
             scene.add(dirLight);
 
-            const fillLight = new THREE.PointLight(0xf1a851, 0.3); // Luz de relleno color taco
+            const fillLight = new THREE.PointLight(0xf1a851, 0.3);
             fillLight.position.set(-5, -2, 2);
             scene.add(fillLight);
 
@@ -1297,42 +1293,36 @@
             const tacoGroup = new THREE.Group();
 
             // --- 1. Tortilla Semicircular Mejorada ---
-            // Usamos LatheGeometry para crear una forma de disco curvado (uvas) y luego la cortamos a la mitad
             const points = [];
             for (let i = 0; i < 10; i++) {
-                // Curva suave para el borde de la tortilla
                 points.push(new THREE.Vector2(Math.sin(i * 0.18) * 1.8 + 0.1, (i - 5) * 0.08));
             }
-            // LatheGeometry crea la forma rotando los puntos. phiLength: Math.PI crea solo MEDIO giro.
             const shellGeo = new THREE.LatheGeometry(points, 32, 0, Math.PI);
             const shellMat = new THREE.MeshStandardMaterial({ 
-                color: 0xf1a851, // Color anaranjado tortilla
-                side: THREE.DoubleSide, // Ver por ambos lados
+                color: 0xf1a851,
+                side: THREE.DoubleSide,
                 roughness: 0.7,
                 metalness: 0.1
             });
             const shell = new THREE.Mesh(shellGeo, shellMat);
-            // Rotamos y posicionamos la tortilla para que tenga la abertura hacia arriba
             shell.rotation.x = Math.PI / 2;
             shell.rotation.y = Math.PI / 2;
             shell.position.y = -0.2;
             tacoGroup.add(shell);
 
             // --- 2. Relleno Mejorado (Pollo/Carne desmechada) ---
-            // Usamos una esfera aplastada y texturizada con color
-            const meatGeo = new THREE.SphereGeometry(1.5, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2); // Solo media esfera superior
+            const meatGeo = new THREE.SphereGeometry(1.5, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2);
             const meatMat = new THREE.MeshStandardMaterial({ 
-                color: 0x8b4513, // Marrón oscuro carne
+                color: 0x8b4513,
                 roughness: 1.0,
                 metalness: 0.0
             });
             const meat = new THREE.Mesh(meatGeo, meatMat);
-            meat.scale.set(1.0, 0.4, 0.6); // Aplastada dentro de la tortilla
+            meat.scale.set(1.0, 0.4, 0.6);
             meat.position.set(0, 0.1, 0);
             tacoGroup.add(meat);
 
-            // --- 3. Lechuga Desmechada (Verde oscuro y claro) ---
-            // Pequeños cubos aleatorios para simular hojas
+            // --- 3. Lechuga Desmechada ---
             const lettuceGeo = new THREE.BoxGeometry(0.15, 0.15, 0.15);
             const lettuceMatDark = new THREE.MeshStandardMaterial({ color: 0x55ab53, roughness: 1.0 });
             const lettuceMatLight = new THREE.MeshStandardMaterial({ color: 0x88cd53, roughness: 1.0 });
@@ -1340,23 +1330,21 @@
             for(let i = 0; i < 60; i++) {
                 const mat = Math.random() > 0.4 ? lettuceMatDark : lettuceMatLight;
                 const leaf = new THREE.Mesh(lettuceGeo, mat);
-                // Posiciones aleatorias esparcidas sobre la carne
                 leaf.position.set(
-                    (Math.random() - 0.5) * 2.6, // Ancho
-                    0.3 + Math.random() * 0.2, // Alto sobre carne
-                    (Math.random() - 0.5) * 0.8 // Profundidad
+                    (Math.random() - 0.5) * 2.6,
+                    0.3 + Math.random() * 0.2,
+                    (Math.random() - 0.5) * 0.8
                 );
                 leaf.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
                 tacoGroup.add(leaf);
             }
 
-            // --- 4. Tomate y Cebolla picada (Rojo y Blanco) ---
-            // Esferas pequeñas
+            // --- 4. Tomate y Cebolla picada ---
             const tomatoGeo = new THREE.SphereGeometry(0.12, 8, 6);
-            const tomatoMat = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5 }); // Rojo brillante
+            const tomatoMat = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5 });
             
             const onionGeo = new THREE.SphereGeometry(0.1, 8, 6);
-            const onionMat = new THREE.MeshStandardMaterial({ color: 0xfffffc, roughness: 0.8 }); // Blanco
+            const onionMat = new THREE.MeshStandardMaterial({ color: 0xfffffc, roughness: 0.8 });
 
             for(let i = 0; i < 25; i++) {
                 const isTomato = Math.random() > 0.3;
@@ -1365,17 +1353,16 @@
                 const piece = new THREE.Mesh(geo, mat);
                 piece.position.set(
                     (Math.random() - 0.5) * 2.6,
-                    0.4 + Math.random() * 0.3, // Más alto que lechuga
+                    0.4 + Math.random() * 0.3,
                     (Math.random() - 0.5) * 0.7
                 );
                 tacoGroup.add(piece);
             }
 
-            // Inclinación inicial para verlo bien
-            tacoGroup.rotation.x = 0.4; // Un poco inclinado hacia adelante
+            tacoGroup.rotation.x = 0.4;
             scene.add(tacoGroup);
 
-            // --- Control Interactivo MEJORADO (SOLO ROTACIÓN, SIN ZOOM) ---
+            // --- Control Interactivo (SOLO ROTACIÓN, SIN ZOOM) ---
             let isDragging = false;
             let previousMousePosition = { x: 0, y: 0 };
 
@@ -1391,9 +1378,8 @@
                     y: e.clientY - previousMousePosition.y
                 };
 
-                // Rotar el grupo basado en el movimiento del ratón
-                tacoGroup.rotation.y += deltaMove.x * 0.01; // Rotación horizontal
-                tacoGroup.rotation.x += deltaMove.y * 0.01; // Rotación vertical
+                tacoGroup.rotation.y += deltaMove.x * 0.01;
+                tacoGroup.rotation.x += deltaMove.y * 0.01;
 
                 previousMousePosition = { x: e.clientX, y: e.clientY };
             });
@@ -1402,7 +1388,7 @@
 
             // Soporte para pantallas táctiles (mismos controles, SIN ZOOM)
             renderer.domElement.addEventListener('touchstart', (e) => {
-                if(e.touches.length === 1) { // Solo un dedo
+                if(e.touches.length === 1) {
                     isDragging = true;
                     previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
                 }
@@ -1419,15 +1405,13 @@
                 tacoGroup.rotation.x += deltaMove.y * 0.01;
 
                 previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                e.preventDefault(); // Prevenir scroll de la página al arrastrar
+                e.preventDefault();
             }, { passive: false });
 
             window.addEventListener('touchend', () => { isDragging = false; });
 
-            // --- Animación continua y Responsivo ---
             function animate() {
                 requestAnimationFrame(animate);
-                // Rotación automática suave cuando no se arrastra
                 if (!isDragging) {
                     tacoGroup.rotation.y += 0.003;
                 }
@@ -1436,7 +1420,6 @@
 
             animate();
 
-            // Ajustar tamaño al cambiar ventana
             window.addEventListener('resize', () => {
                 const w = container.clientWidth;
                 const h = container.clientHeight;
