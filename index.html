@@ -94,21 +94,18 @@
         }
 
         .mini-logo-badge {
-            width: 48px;
-            height: 48px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            border: 2px solid var(--navy-blue);
-            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: var(--bg-cream);
         }
 
-        .mini-logo-badge img {
+        .mini-logo-badge svg {
             width: 100%;
             height: 100%;
-            object-fit: cover;
         }
 
         .brand-title {
@@ -816,10 +813,37 @@
     <nav class="navbar">
         <div class="nav-container max-w-7xl">
             
-            <!-- Logo Header con tu imagen real -->
+            <!-- Logo Header con SVG exacto del Logo Oficial Taco Loco -->
             <a href="#" class="brand-logo">
                 <div class="mini-logo-badge">
-                    <img src="logo.png" alt="Taco Loco Logo">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Círculo de fondo -->
+                        <circle cx="100" cy="100" r="95" fill="#f8f4ed" stroke="#0b1e36" stroke-width="10"/>
+                        <!-- Texto Superior "TACO LOCO" -->
+                        <path id="text-path-top" d="M 30 100 A 70 70 0 0 1 170 100" fill="none" />
+                        <text font-family="'Fredoka', sans-serif" font-weight="700" font-size="22" fill="#0b1e36" text-anchor="middle">
+                            <textPath href="#text-path-top" startOffset="50%">TACO LOCO</textPath>
+                        </text>
+                        <!-- Puntos laterales -->
+                        <circle cx="35" cy="100" r="5" fill="#0b1e36"/>
+                        <circle cx="165" cy="100" r="5" fill="#0b1e36"/>
+                        <!-- Taco Oficial -->
+                        <g transform="translate(10, 5)">
+                            <path d="M 45 105 C 45 65, 135 65, 135 105 Z" fill="#88ab53"/> <!-- Guacamole/Lechuga -->
+                            <path d="M 40 110 C 40 75, 130 75, 130 110 Z" fill="#f1a851"/> <!-- Tortilla trasera -->
+                            <path d="M 35 110 C 35 90, 60 85, 75 100 C 85 110, 50 115, 35 110 Z" fill="#603813"/> <!-- Carne -->
+                            <path d="M 45 112 C 55 82, 135 82, 135 112 Z" fill="#f1a851" stroke="#e08f33" stroke-width="2"/> <!-- Tortilla frontal -->
+                            <circle cx="75" cy="100" r="6" fill="#e08f33" opacity="0.6"/>
+                            <circle cx="110" cy="102" r="8" fill="#e08f33" opacity="0.6"/>
+                        </g>
+                        <!-- Texto Inferior "SI NO PICA, NO CUENTA" -->
+                        <text x="100" y="142" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="10" fill="#0b1e36" text-anchor="middle" letter-spacing="2">SI NO PICA,</text>
+                        <text x="100" y="154" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="10" fill="#0b1e36" text-anchor="middle" letter-spacing="2">NO CUENTA</text>
+                        <!-- Línea separadora -->
+                        <line x1="60" y1="162" x2="140" y2="162" stroke="#0b1e36" stroke-width="1.5"/>
+                        <!-- Año -->
+                        <text x="100" y="175" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="9" fill="#0b1e36" text-anchor="middle" letter-spacing="3">2026</text>
+                    </svg>
                 </div>
                 <div class="brand-title">
                     <span class="brand-name">TACO LOCO</span>
@@ -1010,7 +1034,7 @@
         </div>
     </section>
 
-    <!-- Section: Nuestro Equipo -->
+    <!-- Section: Nuestro Equipo (Actualizado con Gabriel) -->
     <section id="equipo" class="section">
         <div class="max-w-7xl">
             <div class="section-header">
@@ -1258,7 +1282,7 @@
         renderMenu();
     </script>
 
-    <!-- Script de Inicialización de Three.js MEJORADO (Taco Semicircular y SIN ZOOM) -->
+    <!-- Script de Inicialización de Three.js (Taco Semicircular y SIN ZOOM) -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('three-canvas-container');
@@ -1277,7 +1301,7 @@
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            // Iluminación mejorada
+            // Iluminación
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambientLight);
 
@@ -1292,7 +1316,7 @@
             // Grupo para el Taco 3D
             const tacoGroup = new THREE.Group();
 
-            // --- 1. Tortilla Semicircular Mejorada ---
+            // Tortilla Semicircular
             const points = [];
             for (let i = 0; i < 10; i++) {
                 points.push(new THREE.Vector2(Math.sin(i * 0.18) * 1.8 + 0.1, (i - 5) * 0.08));
@@ -1310,7 +1334,7 @@
             shell.position.y = -0.2;
             tacoGroup.add(shell);
 
-            // --- 2. Relleno Mejorado (Pollo/Carne desmechada) ---
+            // Relleno de Pollo/Carne
             const meatGeo = new THREE.SphereGeometry(1.5, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2);
             const meatMat = new THREE.MeshStandardMaterial({ 
                 color: 0x8b4513,
@@ -1322,7 +1346,7 @@
             meat.position.set(0, 0.1, 0);
             tacoGroup.add(meat);
 
-            // --- 3. Lechuga Desmechada ---
+            // Lechuga
             const lettuceGeo = new THREE.BoxGeometry(0.15, 0.15, 0.15);
             const lettuceMatDark = new THREE.MeshStandardMaterial({ color: 0x55ab53, roughness: 1.0 });
             const lettuceMatLight = new THREE.MeshStandardMaterial({ color: 0x88cd53, roughness: 1.0 });
@@ -1339,7 +1363,7 @@
                 tacoGroup.add(leaf);
             }
 
-            // --- 4. Tomate y Cebolla picada ---
+            // Tomate y Cebolla
             const tomatoGeo = new THREE.SphereGeometry(0.12, 8, 6);
             const tomatoMat = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5 });
             
@@ -1362,7 +1386,7 @@
             tacoGroup.rotation.x = 0.4;
             scene.add(tacoGroup);
 
-            // --- Control Interactivo (SOLO ROTACIÓN, SIN ZOOM) ---
+            // Control Interactivo (SOLO ROTACIÓN, SIN ZOOM)
             let isDragging = false;
             let previousMousePosition = { x: 0, y: 0 };
 
@@ -1386,7 +1410,6 @@
 
             window.addEventListener('mouseup', () => { isDragging = false; });
 
-            // Soporte para pantallas táctiles (mismos controles, SIN ZOOM)
             renderer.domElement.addEventListener('touchstart', (e) => {
                 if(e.touches.length === 1) {
                     isDragging = true;
