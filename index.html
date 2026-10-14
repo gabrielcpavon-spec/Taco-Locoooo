@@ -176,6 +176,13 @@
             font-size: 0.75rem;
             padding: 2px 8px;
             border-radius: 9999px;
+            animation: pulse-badge 1.5s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
         }
 
         /* ==========================================================================
@@ -461,6 +468,14 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        /* Estilo dinámico cuando seleccionan Chipotle Extremo */
+        .menu-card.extreme-active {
+            border-color: var(--chili-red);
+            box-shadow: 0 0 20px rgba(192, 57, 43, 0.25);
+            background: linear-gradient(135deg, #ffffff 80%, #fff3f2 100%);
         }
 
         .menu-card-footer {
@@ -488,6 +503,7 @@
             font-weight: 600;
             color: var(--navy-blue);
             margin-bottom: 0.75rem;
+            transition: border-color 0.2s;
         }
 
         .full-width {
@@ -511,6 +527,8 @@
 
         .salsa-extreme {
             background-color: var(--navy-blue);
+            position: relative;
+            overflow: hidden;
         }
 
         .salsa-emoji {
@@ -817,31 +835,24 @@
             <a href="#" class="brand-logo">
                 <div class="mini-logo-badge">
                     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Círculo de fondo -->
                         <circle cx="100" cy="100" r="95" fill="#f8f4ed" stroke="#0b1e36" stroke-width="10"/>
-                        <!-- Texto Superior "TACO LOCO" -->
                         <path id="text-path-top" d="M 30 100 A 70 70 0 0 1 170 100" fill="none" />
                         <text font-family="'Fredoka', sans-serif" font-weight="700" font-size="22" fill="#0b1e36" text-anchor="middle">
                             <textPath href="#text-path-top" startOffset="50%">TACO LOCO</textPath>
                         </text>
-                        <!-- Puntos laterales -->
                         <circle cx="35" cy="100" r="5" fill="#0b1e36"/>
                         <circle cx="165" cy="100" r="5" fill="#0b1e36"/>
-                        <!-- Taco Oficial -->
                         <g transform="translate(10, 5)">
-                            <path d="M 45 105 C 45 65, 135 65, 135 105 Z" fill="#88ab53"/> <!-- Guacamole/Lechuga -->
-                            <path d="M 40 110 C 40 75, 130 75, 130 110 Z" fill="#f1a851"/> <!-- Tortilla trasera -->
-                            <path d="M 35 110 C 35 90, 60 85, 75 100 C 85 110, 50 115, 35 110 Z" fill="#603813"/> <!-- Carne -->
-                            <path d="M 45 112 C 55 82, 135 82, 135 112 Z" fill="#f1a851" stroke="#e08f33" stroke-width="2"/> <!-- Tortilla frontal -->
+                            <path d="M 45 105 C 45 65, 135 65, 135 105 Z" fill="#88ab53"/>
+                            <path d="M 40 110 C 40 75, 130 75, 130 110 Z" fill="#f1a851"/>
+                            <path d="M 35 110 C 35 90, 60 85, 75 100 C 85 110, 50 115, 35 110 Z" fill="#603813"/>
+                            <path d="M 45 112 C 55 82, 135 82, 135 112 Z" fill="#f1a851" stroke="#e08f33" stroke-width="2"/>
                             <circle cx="75" cy="100" r="6" fill="#e08f33" opacity="0.6"/>
                             <circle cx="110" cy="102" r="8" fill="#e08f33" opacity="0.6"/>
                         </g>
-                        <!-- Texto Inferior "SI NO PICA, NO CUENTA" -->
                         <text x="100" y="142" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="10" fill="#0b1e36" text-anchor="middle" letter-spacing="2">SI NO PICA,</text>
                         <text x="100" y="154" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="10" fill="#0b1e36" text-anchor="middle" letter-spacing="2">NO CUENTA</text>
-                        <!-- Línea separadora -->
                         <line x1="60" y1="162" x2="140" y2="162" stroke="#0b1e36" stroke-width="1.5"/>
-                        <!-- Año -->
                         <text x="100" y="175" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="9" fill="#0b1e36" text-anchor="middle" letter-spacing="3">2026</text>
                     </svg>
                 </div>
@@ -1009,7 +1020,7 @@
                 </div>
 
                 <div class="salsa-card salsa-extreme">
-                    <div class="salsa-emoji">💀</div>
+                    <div class="salsa-emoji">💀 🔥</div>
                     <h3 class="salsa-title text-white">Chipotle Loco</h3>
                     <p class="salsa-desc text-white-80">Receta secreta de la casa. ¡Pica sabroso!</p>
                     <div class="salsa-level yellow">PICANTE: 🌶️🌶️🌶️🌶️ (EXTREMO)</div>
@@ -1034,7 +1045,7 @@
         </div>
     </section>
 
-    <!-- Section: Nuestro Equipo (Actualizado con Gabriel) -->
+    <!-- Section: Nuestro Equipo (Con Gabriel) -->
     <section id="equipo" class="section">
         <div class="max-w-7xl">
             <div class="section-header">
@@ -1111,7 +1122,7 @@
         </div>
     </div>
 
-    <!-- Script de Lógica del Carrito y Menú -->
+    <!-- Script de Lógica del Carrito, Audio Web y Estilo Extremo -->
     <script>
         const menuData = [
             { id: 1, name: "Orden de 2 Tacos de Pollo", desc: "Deliciosos tacos de pollo bien doraditos con su verdura.", price: 45, icon: "🌮🌮" },
@@ -1122,10 +1133,34 @@
 
         let cart = [];
 
+        // --- EFECTO DE SONIDO ÉPICO CON WEB AUDIO API ---
+        function playBipSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nota D5
+                oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // Sube a A5
+
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.15);
+            } catch (e) {
+                // Silencioso si el navegador bloquea audio sin interacción previa
+            }
+        }
+
         function renderMenu() {
             const container = document.getElementById('menu-container');
             container.innerHTML = menuData.map(item => `
-                <div class="menu-card">
+                <div class="menu-card" id="card-${item.id}">
                     <div>
                         <div class="card-icon">${item.icon}</div>
                         <h3 class="card-title">${item.name}</h3>
@@ -1137,11 +1172,11 @@
                         
                         ${item.id !== 4 ? `
                             <label class="select-label">Salsa opcional:</label>
-                            <select id="salsa-${item.id}" class="select-salsa">
+                            <select id="salsa-${item.id}" class="select-salsa" onchange="checkExtremeStyle(${item.id})">
                                 <option value="Salsa Verde (Leve)">🟢 Salsa Verde (Leve)</option>
                                 <option value="Salsa Roja (Medio)">🔴 Salsa Roja (Medio)</option>
                                 <option value="Salsa Macha (Alto)">🟤 Salsa Macha (Alto)</option>
-                                <option value="Chipotle Loco (EXTREMO)">💀 Chipotle Loco (EXTREMO)</option>
+                                <option value="Chipotle Loco (EXTREMO)">💀 Chipotle Loco (EXTREMO 🔥)</option>
                             </select>
                         ` : ''}
 
@@ -1153,7 +1188,21 @@
             `).join('');
         }
 
+        // --- MODO "PICA-PICA" EXTREMO VISUAL ---
+        function checkExtremeStyle(id) {
+            const selectEl = document.getElementById(`salsa-${id}`);
+            const cardEl = document.getElementById(`card-${id}`);
+            if (selectEl && cardEl) {
+                if (selectEl.value.includes("EXTREMO")) {
+                    cardEl.classList.add('extreme-active');
+                } else {
+                    cardEl.classList.remove('extreme-active');
+                }
+            }
+        }
+
         function addMenuItem(id) {
+            playBipSound(); // Reproduce sonido épico
             const item = menuData.find(i => i.id === id);
             let salsa = "N/A";
             const salsaSelect = document.getElementById(`salsa-${id}`);
@@ -1174,6 +1223,7 @@
         }
 
         function addToCart(name, price) {
+            playBipSound(); // Reproduce sonido épico
             const cartKey = `${name}`;
             const existing = cart.find(i => i.key === cartKey);
 
